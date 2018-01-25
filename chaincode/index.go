@@ -1,4 +1,3 @@
-// index
 package main
 
 import (
@@ -12,13 +11,13 @@ import (
 
 func CreateValueIndex(stub shim.ChaincodeStubInterface, indexType, key, value string) error {
 	if value == "" {
-		return errors.New("索引的值value不能为空")
+		return errors.New("Index value can not be null")
 	}
 	key = indexType + key
 	b, _ := stub.GetState(key)
 	if len(b) != 0 {
 		if string(b) != value {
-			return fmt.Errorf("Index of Type %s、KEY %s exists with diffent index value", indexType, key)
+			return fmt.Errorf("Index of Type %s KEY %s exists with diffent index value", indexType, key)
 		} else {
 			return nil
 		}
