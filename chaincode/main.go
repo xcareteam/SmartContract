@@ -8,14 +8,14 @@ import (
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
-type DunChaincode struct {
+type XChaincode struct {
 }
 
-func (t *DunChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
+func (t *XChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	return t.init(stub)
 }
 
-func (t *DunChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
+func (t *XChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	function, args := stub.GetFunctionAndParameters()
 	if function == "userApprove" { 
 		return t.userApprove(stub, args)
