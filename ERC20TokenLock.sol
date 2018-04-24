@@ -22,19 +22,19 @@ contract ERC20 {
 
 contract Math {
     
-    function add(uint256 x, uint256 y) constant internal returns (uint256 z) {
+    function add(uint256 x, uint256 y) pure internal returns (uint256 z) {
         assert((z = x + y) >= x);
     }
 
-    function sub(uint256 x, uint256 y) constant internal returns (uint256 z) {
+    function sub(uint256 x, uint256 y) pure internal returns (uint256 z) {
         assert((z = x - y) <= x);
     }
 
-    function mul(uint256 x, uint256 y) constant internal returns (uint256 z) {
+    function mul(uint256 x, uint256 y) pure internal returns (uint256 z) {
         assert((z = x * y) >= x);
     }
 
-    function div(uint256 x, uint256 y) constant internal returns (uint256 z) {
+    function div(uint256 x, uint256 y) pure internal returns (uint256 z) {
         z = x / y;
     }
 
@@ -48,7 +48,7 @@ contract TokenLock is Math {
 
     ERC20 token;
 
-    function TokenLock(uint256 _lockedDays, address _address) {
+    function TokenLock(uint256 _lockedDays, address _address) public {
         lockedDays = _lockedDays;
         startTime = time();
 
@@ -64,16 +64,29 @@ contract TokenLock is Math {
     }
 
     function getBalance() view external returns (uint256) {
-        return token.balanceOf[owner];
+        return token.balanceOf(address(this));
+    }
+    
+    function transfer(address to, uint256 value) external {
+        require(msg.sender == owner);
+        
+        uint passedDays = dayFor(time());
+        require(passedDays > lockedDays);
+        
+        token.transfer(to, value);
     }
 
-    function time() constant returns (uint) {
+    function time() public constant returns (uint) {
         return block.timestamp;
     }
 
-    function dayFor(uint timestamp) constant returns (uint) {
+    function dayFor(uint timestamp) internal constant returns (uint) {
         return timestamp < startTime
             ? 0
-            : sub(timestamp, startTime) / 23 hours + 1;
+            : sub(timestamp, startTime) / 24 hours + 1;
+    }
+    
+    function getPassedDays() external constant returns (uint) {
+        return dayFor(time());
     }
 }
